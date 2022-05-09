@@ -59,6 +59,11 @@ search_weiboid(keyword)
 search_email(keyword)
 ```
 
+搜索Facebook
+```
+search_facebook(keyword)
+```
+
 ## 目前可搜索的部分裤子列表
 
 - 17173网络游戏:17173网络游戏用户数据
