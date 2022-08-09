@@ -8,6 +8,7 @@
 #
 
 import os
+import sys
 import requests
 import json
 import time
@@ -65,6 +66,9 @@ class LosePrivacy():
         logging.info('首次运行，将从LosePrivacy服务器中拉取最新的数据泄露事件的元数据')
         # 获取LosePrivacy所有可搜索的数据类别
         self.dataclasses = self.get_dataclasses()
+        if not self.dataclasses:
+            logging.error('init_data(): 数据获取失败，请检查API KEY权限')
+            return
         # 获取LosePrivacy每一类别的数据泄露事件的具体信息
         for dataclass in self.dataclasses:
             breaches = self.get_breaches(dataclass['field'])
@@ -101,10 +105,14 @@ class LosePrivacy():
                 all_topics = json.loads(data)
             return
         logging.error('load_data错误：请先调用init_data()，再调用load_data()!')
+        sys.exit("load_data Error") 
     
     # 获取LosePrivacy所有可搜索的数据类别
     def get_dataclasses(self):
         rsp = requests.post(url = self.host+self.url_dc, data = {},headers = self.header(), timeout=self.timeout)
+        if rsp.status_code != 200:
+            logging.error('网络错误')
+            return None
         obj = json.loads(rsp.text.strip())
         time.sleep(self.ratelimit)
         if obj['code'] == 200:
@@ -113,37 +121,50 @@ class LosePrivacy():
                 logging.info('%s: field_name:%s, field_value:%s' % (cate['name'],cate['field'],cate['value']))
             return obj['data']
         else:
+            logging.error('错误代码: %s' % obj['code'])
             return None
 
     # 获取LosePrivacy某一类别的数据泄露事件
     def get_breaches(self, field):
         rsp = requests.post(url = self.host+self.url_breaches, data = {'field':field},headers = self.header(), timeout=self.timeout)
+        if rsp.status_code != 200:
+            logging.error('网络错误')
+            return None
         obj = json.loads(rsp.text.strip())
         time.sleep(self.ratelimit)
         if obj['code'] == 200:
             return obj['data']
         else:
+            logging.error('错误代码: %s' % obj['code'])
             return None
 
     # 获取LosePrivacy的所有数据泄露专题
     def get_topics(self):
         rsp = requests.post(url = self.host+self.url_topics, data = {},headers = self.header(), timeout=self.timeout)
+        if rsp.status_code != 200:
+            logging.error('网络错误')
+            return None
         obj = json.loads(rsp.text.strip())
         time.sleep(self.ratelimit)
         if obj['code'] == 200:
             return obj['data']
         else:
+            logging.error('错误代码: %s' % obj['code'])
             return None
 
     # 搜索泄露信息
     def searchbreach(self,keyword,breach_id,field):
         data = {'keyword':keyword,'breach_id':breach_id,'field_value':field}
         rsp = requests.post(url = self.host+self.url_searchbreach, data = data,headers = self.header(), timeout=self.timeout)
+        if rsp.status_code != 200:
+            logging.error('网络错误')
+            return None
         obj = json.loads(rsp.text.strip())
         time.sleep(self.ratelimit)
         if obj['code'] == 200:
             return obj['data']
         else:
+            logging.error('错误代码: %s' % obj['code'])
             return None
 
     def search(self,keyword,field_value):

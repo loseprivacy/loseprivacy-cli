@@ -15,7 +15,9 @@ import logging
 from loseprivacy import LosePrivacy
 
 host = 'https://api.loseprivacy.cyou'
-apikey = '填入从LosePrivacy获取的API KEY'
+# 此处填入从LosePrivacy获取的API KEY
+apikey = 'LosePrivacy API KEY'
+# 此处填入API KEY的请求速率(速率值受限于API KEY的权限)
 ratelimit = 2
 timeout = 60
 
