@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+# coding=utf-8
 #
 #  LosePrivacy API Sample，最全最强大的社工库平台
 #  官网：https://loseprivacy.click
